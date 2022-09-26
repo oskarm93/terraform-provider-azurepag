@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/oskarm93/azurepag-client-go"
 )
 
 func init() {
@@ -26,11 +27,19 @@ func init() {
 func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
+			Schema: map[string]*schema.Schema{
+				"token": &schema.Schema{
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("AZUREPAG_TOKEN", nil),
+				},
+			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"scaffolding_data_source": dataSourceScaffolding(),
+				"azurepag_role_definitions":         dataSourceRoleDefinitions(),
+				"azurepag_role_assignment_requests": dataSourceRoleAssignmentRequests(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
+				"azurepag_registration": resourceRegistration(),
 			},
 		}
 
@@ -40,18 +49,22 @@ func New(version string) func() *schema.Provider {
 	}
 }
 
-type apiClient struct {
-	// Add whatever fields, client or connection info, etc. here
-	// you would need to setup to communicate with the upstream
-	// API.
-}
-
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	return func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-		// Setup a User-Agent for your API client (replace the provider name for yours):
-		// userAgent := p.UserAgent("terraform-provider-scaffolding", version)
-		// TODO: myClient.UserAgent = userAgent
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		var diags diag.Diagnostics
 
-		return &apiClient{}, nil
+		token := d.Get("token").(string)
+
+		if token != "" {
+			userAgent := p.UserAgent("terraform-provider-azurepag", version)
+			client := azurepag.NewClient(&token, &userAgent)
+			return client, diags
+		} else {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "API token must be specified",
+			})
+			return nil, diags
+		}
 	}
 }

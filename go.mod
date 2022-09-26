@@ -1,11 +1,12 @@
-module github.com/hashicorp/terraform-provider-scaffolding
+module github.com/hashicorp/terraform-provider-azurepag
 
-go 1.17
+go 1.19
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
 	github.com/hashicorp/terraform-plugin-log v0.7.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.20.0
+	github.com/oskarm93/azurepag-client-go v0.0.0-20220926215445-f06ba8b05d3a
 )
 
 require (
@@ -67,3 +68,5 @@ require (
 	google.golang.org/grpc v1.48.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
+
+replace github.com/oskarm93/azurepag-client-go => ../azurepag-client-go
