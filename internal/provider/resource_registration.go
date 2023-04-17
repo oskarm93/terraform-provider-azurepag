@@ -10,7 +10,7 @@ import (
 
 func resourceRegistration() *schema.Resource {
 	return &schema.Resource{
-		Description: "This resources ensures that an Azure AD group is registered to use Privileged Access Group feature. The group must have assignableToRoles set to true beforehand.",
+		Description: "This resource ensures that an Azure AD group is registered to use Privileged Access Group feature. The group must have assignableToRoles set to true beforehand.",
 
 		CreateContext: resourceRegistrationCreate,
 		ReadContext:   resourceRegistrationRead,

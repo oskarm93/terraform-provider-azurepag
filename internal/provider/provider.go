@@ -34,12 +34,10 @@ func New(version string) func() *schema.Provider {
 					DefaultFunc: schema.EnvDefaultFunc("AZUREPAG_TOKEN", nil),
 				},
 			},
-			DataSourcesMap: map[string]*schema.Resource{
-				"azurepag_role_definitions":         dataSourceRoleDefinitions(),
-				"azurepag_role_assignment_requests": dataSourceRoleAssignmentRequests(),
-			},
 			ResourcesMap: map[string]*schema.Resource{
-				"azurepag_registration": resourceRegistration(),
+				"azurepag_registration":            resourceRegistration(),
+				"azurepag_role_assignment_request": resourceRoleAssignmentRequest(),
+				"azurepag_role_settings":           resourceRoleSettings(),
 			},
 		}
 
@@ -62,7 +60,7 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		} else {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "API token must be specified",
+				Summary:  "API token must be specified.",
 			})
 			return nil, diags
 		}
