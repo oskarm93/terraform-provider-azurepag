@@ -39,11 +39,6 @@ func resourceRegistrationCreate(ctx context.Context, d *schema.ResourceData, met
 
 	d.SetId(objectId)
 
-	// // write logs using the tflog package
-	// // see https://pkg.go.dev/github.com/hashicorp/terraform-plugin-log/tflog
-	// // for more information
-	// tflog.Trace(ctx, "created a resource")
-
 	return diags
 }
 
