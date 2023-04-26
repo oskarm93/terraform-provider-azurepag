@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -32,7 +33,27 @@ func resourceRegistrationCreate(ctx context.Context, d *schema.ResourceData, met
 	client := meta.(*azurepag.Client)
 
 	objectId := d.Get("object_id").(string)
-	err := client.RegisterGroup(objectId)
+
+	attempts := 0
+	for {
+		err := client.RegisterGroup(objectId)
+		if err != nil {
+			err_msg := err.Error()
+			if err_msg != "status: 401, body: " {
+				return diag.FromErr(err)
+			} else {
+				if attempts >= 50 {
+					return diag.FromErr(err)
+				}
+				time.Sleep(3 * time.Second)
+				attempts++
+			}
+		} else {
+			break
+		}
+	}
+
+	_, err := client.GetRoleDefinitions(objectId)
 	if err != nil {
 		return diag.FromErr(err)
 	}

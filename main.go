@@ -33,6 +33,7 @@ func main() {
 	flag.Parse()
 
 	opts := &plugin.ServeOpts{
+		ProviderAddr: "registry.terraform.io/oskarm93/azurepag",
 		Debug:        debugMode,
 		ProviderFunc: provider.New(version),
 	}
